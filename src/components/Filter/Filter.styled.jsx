@@ -1,9 +1,9 @@
 import styled from "@emotion/styled";
 
 export const FilterCont = styled.div`
-text-align: end;
+text-align: start;
 margin-right: 20px;
-margin-bottom: 60px;
+margin-bottom: 40px;
 `
 
 export const FilterTitle = styled.h3`
