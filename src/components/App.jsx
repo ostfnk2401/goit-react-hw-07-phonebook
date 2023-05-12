@@ -21,35 +21,6 @@ export class App extends Component {
     filter: '',
   };
 
-  handleSubmit = data => {
-    const nanoid = customAlphabet('1234567890', 3);
-    const id = 'id-' + nanoid();
-    data = { id, ...data };
-    console.log(data);
-    this.setState(({ contacts }) =>
-      contacts.find(contact => contact.name === data.name)
-        ? Notify.warning(`${data.name} is already in contact`)
-        : { contacts: [data, ...contacts] }
-    );
-  };
-
-  handleFilter = evt => {
-    const { value } = evt.currentTarget;
-    this.setState({ filter: value });
-  };
-
-  handleDeleteContact = contactId => {
-    this.setState(prevState => ({
-      contacts: prevState.contacts.filter(contact => contact.id !== contactId),
-    }));
-  };
-
-  handleFilteredContacts = contacts => {
-    return contacts.filter(contact =>
-      contact.name.toLowerCase().includes(this.state.filter.toLowerCase())
-    );
-  };
-
   componentDidMount() {
     const contacts = localStorage.getItem('contacts');
     const parsedContacts = JSON.parse(contacts);
@@ -63,6 +34,43 @@ export class App extends Component {
       localStorage.setItem('contacts', JSON.stringify(this.state.contacts));
     }
   }
+
+  handleSubmit = data => {
+    const nanoid = customAlphabet('1234567890', 3);
+    const id = 'id-' + nanoid();
+    data = { id, ...data };
+    console.log(data);
+
+    const { contacts } = this.state;
+    const existingContact = contacts.find(contact => contact.name === data.name);
+    if (existingContact) {
+      Notify.warning(`${data.name} is already in contact`);
+    } else {
+      const updatedContacts = [data, ...contacts];
+      this.setState({ contacts: updatedContacts }, () => {
+        localStorage.setItem('contacts', JSON.stringify(updatedContacts));
+      });
+    }
+  };
+
+  handleFilter = evt => {
+    const { value } = evt.currentTarget;
+    this.setState({ filter: value });
+  };
+
+  handleDeleteContact = contactId => {
+    const { contacts } = this.state;
+    const updatedContacts = contacts.filter(contact => contact.id !== contactId);
+    this.setState({ contacts: updatedContacts }, () => {
+      localStorage.setItem('contacts', JSON.stringify(updatedContacts));
+    });
+  };
+
+  handleFilteredContacts = contacts => {
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(this.state.filter.toLowerCase())
+    );
+  };
 
   render() {
     const { contacts, filter } = this.state;
