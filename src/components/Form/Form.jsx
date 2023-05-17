@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import PropTypes from 'prop-types';
@@ -14,17 +14,7 @@ const schema = Yup.object().shape({
   number: Yup.string().min(4).required('Number is required'),
 });
 
-const initialValues = {
-  name: '',
-  number: '',
-};
-
-export const ContactForm = ({ onSubmit }) => {
-  const [initialValues, setInitialValues] = useState({
-    name: '',
-    number: '',
-  });
-
+ export const ContactForm = ({ onSubmit }) => {
   const handleSubmit = (values, { resetForm }) => {
     const newContact = {
       name: values.name,
@@ -37,7 +27,10 @@ export const ContactForm = ({ onSubmit }) => {
   return (
     <PhonebookForm>
       <Formik
-        initialValues={initialValues}
+        initialValues={{
+          name: '',
+          number: '',
+        }}
         onSubmit={handleSubmit}
         validationSchema={schema}
       >
@@ -62,3 +55,4 @@ export const ContactForm = ({ onSubmit }) => {
 ContactForm.propTypes = {
   onSubmit: PropTypes.func.isRequired,
 };
+
