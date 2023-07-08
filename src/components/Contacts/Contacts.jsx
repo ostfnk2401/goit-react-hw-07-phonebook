@@ -1,31 +1,44 @@
-import PropTypes from 'prop-types'; // ES6
-import { ContactsList, ContactItem, Number, Name, DeleteBtn, P } from './Contacts.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  ContactsList,
+  ContactItem,
+  Number,
+  Name,
+  DeleteBtn,
+  P,
+} from './Contacts.styled';
+import { selectContacts, selectFilter } from 'redux/selectors';
+import { deleteContact } from 'redux/contactsSlice';
 
-export const Contacts = ({ contacts, onDeleteContact }) => {
-    return (
-        <ContactsList>
-            { contacts.map(({id, name, number}) => {
-                return (
-                    <ContactItem key={id}>
-                        <P>&#128100;</P>
-                        <Name>{name}:</Name>
-                        <Number>{number}</Number>
-                        <DeleteBtn type='button' onClick={() => onDeleteContact(id)}>Delete</DeleteBtn>
-                    </ContactItem>
-                )
-            })}
-        </ContactsList>
-    )
-}
+export const Contacts = () => {
+  const contacts = useSelector(selectContacts);
+  const filter = useSelector(selectFilter);
+  const dispatch = useDispatch();
+  const handleFilteredContacts = () => {
+    return contacts.filter(contact =>
+      contact.name.toLowerCase().includes(filter.toLowerCase())
+    );
+  };
 
+  const filteredContacts = handleFilteredContacts();
 
-Contacts.propTypes = {
-    contacts: PropTypes.arrayOf( 
-        PropTypes.exact({
-            name: PropTypes.string.isRequired,
-            id: PropTypes.string.isRequired,
-            number: PropTypes.string.isRequired,
-        }).isRequired,
-    ),
-    onDeleteContact: PropTypes.func.isRequired,
-}
+  return (
+    <ContactsList>
+      {filteredContacts.map(({ id, name, number }) => {
+        return (
+          <ContactItem key={id}>
+            <P>&#128100;</P>
+            <Name>{name}:</Name>
+            <Number>{number}</Number>
+            <DeleteBtn
+              type="button"
+              onClick={() => dispatch(deleteContact(id))}
+            >
+              Delete
+            </DeleteBtn>
+          </ContactItem>
+        );
+      })}
+    </ContactsList>
+  );
+};

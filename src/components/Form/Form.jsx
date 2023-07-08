@@ -1,26 +1,37 @@
 import React from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import PropTypes from 'prop-types';
 
-import {
-  PhonebookForm,
-  SubmitBtn,
-  FormTitle,
-} from './Form.styled';
+import { PhonebookForm, SubmitBtn, FormTitle } from './Form.styled';
+import { useDispatch, useSelector } from 'react-redux';
+import { selectContacts } from 'redux/selectors';
+import { Notify } from 'notiflix';
+import { customAlphabet } from 'nanoid';
+import { addContact } from 'redux/contactsSlice';
 
 const schema = Yup.object().shape({
   name: Yup.string().min(2).max(70).required('Name is required'),
   number: Yup.string().min(4).required('Number is required'),
 });
 
- export const ContactForm = ({ onSubmit }) => {
+export const ContactForm = () => {
+  const contacts = useSelector(selectContacts);
+  const dispatch = useDispatch();
   const handleSubmit = (values, { resetForm }) => {
+    const nanoid = customAlphabet('1234567890', 3);
     const newContact = {
       name: values.name,
       number: values.number,
+      id: 'id-' + nanoid(),
     };
-    onSubmit(newContact);
+    const existingContact = contacts.find(
+      contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
+    );
+    if (existingContact) {
+      Notify.warning(`${newContact.name} is already in contact`);
+      return;
+    }
+    dispatch(addContact(newContact));
     resetForm();
   };
 
@@ -51,8 +62,3 @@ const schema = Yup.object().shape({
     </PhonebookForm>
   );
 };
-
-ContactForm.propTypes = {
-  onSubmit: PropTypes.func.isRequired,
-};
-
