@@ -8,7 +8,7 @@ import {
   P,
 } from './Contacts.styled';
 import { selectContacts, selectFilter } from 'redux/selectors';
-import { deleteContact } from 'redux/contactsSlice';
+import { deleteContactsThunk } from 'redux/operations';
 
 export const Contacts = () => {
   const contacts = useSelector(selectContacts);
@@ -32,7 +32,7 @@ export const Contacts = () => {
             <Number>{number}</Number>
             <DeleteBtn
               type="button"
-              onClick={() => dispatch(deleteContact(id))}
+              onClick={() => dispatch(deleteContactsThunk(id))}
             >
               Delete
             </DeleteBtn>

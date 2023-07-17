@@ -6,8 +6,7 @@ import { PhonebookForm, SubmitBtn, FormTitle } from './Form.styled';
 import { useDispatch, useSelector } from 'react-redux';
 import { selectContacts } from 'redux/selectors';
 import { Notify } from 'notiflix';
-import { customAlphabet } from 'nanoid';
-import { addContact } from 'redux/contactsSlice';
+import { addContactsThunk } from 'redux/operations';
 
 const schema = Yup.object().shape({
   name: Yup.string().min(2).max(70).required('Name is required'),
@@ -18,11 +17,9 @@ export const ContactForm = () => {
   const contacts = useSelector(selectContacts);
   const dispatch = useDispatch();
   const handleSubmit = (values, { resetForm }) => {
-    const nanoid = customAlphabet('1234567890', 3);
     const newContact = {
       name: values.name,
       number: values.number,
-      id: 'id-' + nanoid(),
     };
     const existingContact = contacts.find(
       contact => contact.name.toLowerCase() === newContact.name.toLowerCase()
@@ -31,7 +28,7 @@ export const ContactForm = () => {
       Notify.warning(`${newContact.name} is already in contact`);
       return;
     }
-    dispatch(addContact(newContact));
+    dispatch(addContactsThunk(newContact));
     resetForm();
   };
 
